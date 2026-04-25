@@ -13,4 +13,4 @@ sets the database file and starts the flask application. It will tell you, where
 
 Be aware that this is application is not set up for actual production deployment, just for your own private use.
 
-(And basically just for me as an opportunity to play around with flask and sqlight.)
+(And basically just for me as an opportunity to play around with flask and sqlite.)

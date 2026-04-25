@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <title> episode suggestion tool </title>
+</head>
+<body>
+
+    <script src="../static/helpers.js"></script>
+
+    <a href="/"> ← HOME </a>
+
+    <!-- ----------------------------------------------- -->
+
+    <h2>Edit database </h2>
+
+    <p> Add or delete series, seasons, single episodes, or logs. </p>
+
+    <!-- ----------------------------------------------- -->
+
+    <h3>Add new series </h3>
+
+    <form action="/add_series" method="POST">
+        <input type="text" name="title" placeholder="Series title (required)" required>
+        <button type="submit">Add</button>
+    </form>
+
+    <!-- ----------------------------------------------- -->
+
+    <h3> Add season </h3>
+
+    <form action="/add_season" method="POST">
+        <select name="series_id" id="series" required>
+            <option disabled selected value> -- select series -- </option>
+            {% for e in episode_logs | unique(attribute='series_id') %}
+                <option value={{ e.series_id }}>{{ e.series_title }}</option>
+            {% endfor %}
+        </select>
+        <input type="number" name="season_number" placeholder="Season (required)" required>
+        <input type="number" name="number_of_episodes" placeholder="No. of episodes (required)" required>
+        <button type="submit">Add</button>
+    </form>
+
+    <!-- ----------------------------------------------- -->
+
+    <h3> Add episode </h3>
+
+    <form action="/add_episode" method="POST">
+        <select name="series_id" id="series" required>
+            <option disabled selected value> -- select series -- </option>
+            {% for e in episode_logs | unique(attribute='series_id')  %}
+                <option value={{ e.series_id }}> {{ e.series_title }} </option>
+            {% endfor %}
+        </select>
+        <input type="number" name="season_number" placeholder="Season (required)" required>
+        <input type="number" name="episode_number" placeholder="Episode number (required)" required>
+        <button type="submit">Add</button>
+    </form>
+
+<!-- ----------------------------------------------- -->
+
+    <h2> Database contents </h2>
+
+    <ul> {% for s in episode_logs | unique(attribute='series_id') %}
+
+        <li> <a class="text-highlight"> {{ s.series_title }} </a>
+
+            <!-- Delete dialog for deleting the series -->
+            <button onclick="handleDialog('series_{{s.series_id}}', 'open')" class="delete-button">Delete series</button>
+            <dialog id="series_{{s.series_id}}">
+                <p>Are you sure to delete {{s.series_title}}?</p>
+                <form action="/delete_series/{{ s.series_id }}" method="POST" style="display: inline-block;">
+                    <button type="Delete" class="delete-button">Actually delete</button>
+                </form>
+                <button onclick="handleDialog('series_{{s.series_id}}', 'close')">Back</button>
+            </dialog>
+
+            <ul> {% for seas in episode_logs | unique(attribute='season_id') %}
+                    {% if seas.series_id == s.series_id and seas.season_number is not none%}
+                        <li> Season {{seas.season_number}}
+
+                            <!-- Delete dialog for deleting the season -->
+                            <button onclick="handleDialog('season_{{seas.season_id}}', 'open')" class="delete-button">Delete season</button>
+                            <dialog id="season_{{seas.season_id}}">
+                                <p>Are you sure to delete Season {{seas.season_number}} of {{s.series_title}}?</p>
+                                <form action="/delete_series/{{ seas.season_id }}" method="POST" style="display: inline-block;">
+                                    <button type="Delete" class="delete-button">Actually delete</button>
+                                </form>
+                                <button onclick="handleDialog('season_{{seas.season_id}}', 'close')">Back</button>
+                            </dialog>
+
+                            <button onclick="readMoreReadLess( '{{ seas.season_id }}' )" id="myBtn_{{seas.season_id}}" class="hidereveal-button">↓ Show</button>
+
+                            <!-- Hide/reveal more episodes -->
+                            <span id="dots_{{ seas.season_id }}">
+                                <ul> <li class="text-suppressed"> episodes hidden... </li> </ul>
+                            </span>
+
+                            <span id="more_{{ seas.season_id }}" class="more">
+
+                                <ul> {% for e in episode_logs | unique(attribute='episode_id') %}
+                                        {% if e.season_id == seas.season_id %}
+                                            <li>Episode {{e.episode_number}}
+
+                                                <form action="/delete_episode/{{ e.episode_id }}" method="POST" style="display: inline-block;">
+                                                    <button type="Delete" class="delete-button">Delete</button>
+                                                </form>
+
+                                                <form action="/add_episode_log/edit_database/{{ e.episode_id }}" method="POST" style="display: inline-block;">
+                                                    <button type="Insert" class="insert-button">Add log (timestamp = now) </button>
+                                                </form>
+                                                <ul> {% for wd in episode_logs | unique(attribute='log_id') %}
+                                                        {% if wd.episode_id == e.episode_id and wd.date is not none %}
+                                                        <li> {{ wd.date }}
+                                                            <form action="/delete_episode_log/edit_database/{{ wd.log_id }}" method="POST" style="display: inline-block;">
+                                                                <button type="Delete" class="delete-button">Delete</button>
+                                                            </form>
+                                                        </li>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                                <button onclick="readMoreReadLess( '{{ seas.season_id }}' )" id="myBtn_{{seas.season_id}}" class="hidereveal-button"> ↑ Hide</button>
+                            </span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </li>
+
+        {% endfor %}
+    </ul>
+
+</body>
+</html>

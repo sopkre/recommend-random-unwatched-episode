@@ -1,0 +1,82 @@
+body {
+  padding: 1em; 
+  max-width: 50em;
+}
+
+h1,h2,h3 {
+  background-color: lightblue;
+  padding: 0.1em
+}
+
+h1 {
+  padding: 0.3em
+}
+
+h2 {
+  padding: 0.2em
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 0.3em; 
+  padding-right: 1em;
+}
+
+li {
+  padding: 0.2em
+}
+
+.text-success {
+  color: green
+}
+
+.text-failure {
+  color: red
+}
+
+.result-box {
+  border-style: dotted;
+  max-width: 20em;
+  padding: 0.5em
+}
+
+#more {
+  display: none;
+}
+
+.more{
+  display: none;
+}
+
+.delete-button{
+  background-color: lightpink;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid gray;
+}
+
+.insert-button1 {
+  background-color: #04AA6D;
+} 
+
+.hidereveal-button{
+  background-color: lightgray;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  border: 1px solid gray;
+}
+
+.text-suppressed{
+  color: gray;
+  font-style: italic;
+}
+
+.text-highlight{
+  font-weight: bold;
+}

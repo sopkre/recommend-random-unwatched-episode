@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <title> episode recommendation tool </title>
+</head>
+<body>
+
+    <script src="../static/helpers.js"></script>
+
+    <a href="/"> ← HOME </a>
+
+    <!-- ----------------------------------------------- -->
+
+    <h2> Get recommendation for an episode </h2>
+
+    <p> Choose a series and select which episodes should be considered, based on your last log. </p>
+
+    <p>
+        <form action="/get_random_episode" method="POST">
+            <select name="series_id" id="series" required>
+                <option disabled selected value> -- select series -- </option>
+                {% for s in available_series %}
+                    <option value={{ s.id }}>{{ s.title }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="last_log_option" id="last log option" required>
+                <option disabled selected value> -- last time logged -- </option>
+                {% for o in last_log_options %}
+                    <option value={{ last_log_options[o] }}>{{ o }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+    </p>
+
+    <!-- ----------------------------------------------------- -->
+
+    <div class="result-box">
+
+        {% if return_val == "success" %}
+            <p class="text-success">{{ selected_episode.series_title }}  → Season {{selected_episode.season_number}}, Episode {{selected_episode.episode_number}}
+                <form action="/add_episode_log/get_random_episode/{{ selected_episode.episode_id }}" method="POST" style="display: inline-block;">
+                    <button type="Insert">Add log (timestamp = now)</button>
+                </form>
+            </p>
+        {% elif return_val == "empty" %}
+            <p class="text-failure"> No episodes left for your selection. <p>
+            <p> Either delete some logs or select another time frame to consider. </p>
+        {% else %}
+            <p> Use the form above to request a recommendation! </p>
+        {% endif %}
+
+    </div>
+
+    <!-- ----------------------------------------------------- -->
+
+    <h2>Logs in database </h3>
+
+    <ul>
+        {% for s in joined_episodes | unique(attribute='series_id') %}
+
+            <li> <a class="text-highlight"> {{ s.series_title }} </a>
+                <button onclick="readMoreReadLess( '{{ s.series_id }}' )" id="myBtn_{{s.series_id}}" class="hidereveal-button">↓ Show</button>
+
+                <!-- Hide/reveal more episodes -->
+                <span id="dots_{{ s.series_id }}">
+                    <ul> <li class="text-suppressed"> logs hidden... </li> </ul>
+                </span>
+
+                <span id="more_{{ s.series_id }}" class="more">
+                    <ul>
+                        {% for wd in joined_episodes %}
+                            {% if wd.series_id == s.series_id %}
+                                <li>S{{wd.season_number}} E{{wd.episode_number}} ({{ wd.date }})
+                                    <form action="/delete_episode_log/get_random_episode/{{ wd.log_id }}" method="POST" style="display: inline-block;">
+                                        <button type="Delete" class="delete-button">Delete</button>
+                                    </form>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    <button onclick="readMoreReadLess('{{ s.series_id }}')" id="myBtn_{{s.series_id}}" class="hidereveal-button"> ↑ Hide</button>
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>

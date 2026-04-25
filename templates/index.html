@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <title> episode recommendation tool </title>
+</head>
+<body>
+
+    <h1> Episode recommendation tool </h1>
+
+    <p>
+        This tool recommends a random episode to watch or listen to.
+        You can constrain the recommendation to episodes you haven't finished for a while (or ever), based on when you last logged the content.
+    </p>
+
+    <!-- ----------------------------------------------- -->
+
+    <h2> Series in database </h2>
+
+    <table>
+        <th> Title </th>  <th> #Seasons </th> <th> #Episodes </th>
+        {% for s in series %}
+            <tr> <td> {{ s.series_title }} </td> <td> {{ s.season_count }} </td>  <td> {{ s.episode_count }} </td> </tr>
+        {% endfor %}
+    </table>
+
+    <p>
+        → <a href="/edit_database">Edit</a> database.
+    </p>
+
+    <!-- ----------------------------------------------- -->
+
+    <h2> Tools </h2>
+
+    <p>
+         → <a href="/get_random_episode">Get suggestion</a> for an episode.
+    </p>
+
+</body>
+</html>
